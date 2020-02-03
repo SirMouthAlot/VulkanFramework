@@ -79,14 +79,8 @@ void VulkanBackend::CreateInstance()
     {
         createInfo.enabledLayerCount = static_cast<uint32_t>(m_validationLayers.size());
         createInfo.ppEnabledLayerNames = m_validationLayers.data();
-
-        FillMessengerCreateInfo(debugCreateInfo);
-        createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
-    }
-    else {
+    } else {
         createInfo.enabledLayerCount = 0;
-
-        createInfo.pNext = nullptr;
     }
 
     //Makes sure that the instance was sucessfully created
@@ -198,6 +192,12 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanBackend::debugCallback(VkDebugUtilsMessageS
 
 bool VulkanBackend::IsDeviceSuitable(VkPhysicalDevice device)
 {
+    //Gets device supported features. 
+    //We don't really need to use this right now
+    VkPhysicalDeviceProperties deviceFeatures;
+    vkGetPhysicalDeviceProperties(device, &deviceFeatures);
+
+    //Just say it's suitable
     return true;
 }
 
@@ -227,4 +227,6 @@ void VulkanBackend::PickPhysicalDevice()
     {
         throw std::runtime_error("Failed to find a suitable GPU!");
     }
+
+
 }
