@@ -5,7 +5,7 @@ void Game::Run()
     //Initializes window
     InitWindow();
     //Initializes vulkan
-    VulkanBackend::GetInstance()->InitVulkan();
+    VulkanBackend::GetInstance()->InitVulkan(m_window, m_width, m_height);
     //Our main loop, handles everything for the program.
     MainLoop();
     //Cleans up upon exit.
@@ -32,7 +32,15 @@ void Game::MainLoop()
     {
         //Check events (input etc)
         glfwPollEvents();
+        DrawFrame();
     }
+
+    VulkanBackend::GetInstance()->WaitForIdle();
+}
+
+void Game::DrawFrame()
+{
+    VulkanBackend::GetInstance()->DrawFrame();
 }
 
 void Game::Cleanup()

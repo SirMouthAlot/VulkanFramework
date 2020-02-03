@@ -10,9 +10,8 @@ public:
 
 private:
     void InitWindow();
-
     void MainLoop();
-    
+    void DrawFrame();
     void Cleanup();
 
     //Window variables

@@ -156,11 +156,13 @@
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Util.cpp" />
     <ClCompile Include="VulkanBackend.cpp" />
     <ClCompile Include="VulkanImport.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Util.h" />
     <ClInclude Include="VulkanBackend.h" />
     <ClInclude Include="VulkanImport.h" />
   </ItemGroup>
