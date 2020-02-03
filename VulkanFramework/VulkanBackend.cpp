@@ -1,18 +1,25 @@
 #include "VulkanBackend.h"
 
-//Vulkan variables
-VkInstance VulkanBackend::m_instance = VK_NULL_HANDLE;
-VkDebugUtilsMessengerEXT VulkanBackend::m_debugMessenger;
+VulkanBackend* VulkanBackend::m_singletonInst = nullptr;
 
-const std::vector<const char*> VulkanBackend::m_validationLayers = 
+VulkanBackend* VulkanBackend::GetInstance()
 {
-        "VK_LAYER_KHRONOS_validation"
-};
-#ifdef NDEBUG
-    const bool VulkanBackend::m_enableValidationLayers = false;
-#else
-    const bool VulkanBackend::m_enableValidationLayers = true;
-#endif //!NDEBUG
+    if (m_singletonInst == nullptr)
+    {
+        m_singletonInst = new VulkanBackend();
+    }
+    
+    return m_singletonInst;
+}
+
+void VulkanBackend::CleanupInstance()
+{
+    if (m_singletonInst != nullptr)
+    {
+        delete m_singletonInst;
+        m_singletonInst = nullptr;
+    }
+}
 
 void VulkanBackend::InitVulkan()
 {
@@ -20,7 +27,6 @@ void VulkanBackend::InitVulkan()
 	CreateInstance();
 	//Prints out supported extensions
 	OutputExtensions(GetSupportedExtensions());
-
 	//Sets up the debug messenger
 	SetupDebugMessenger();
 }
@@ -33,11 +39,13 @@ void VulkanBackend::CleanupVulkan()
     }
 
     //Cleans up after vk instance
-    if (m_instance != VK_NULL_HANDLE)
+    if (m_instance != nullptr)
     {
         vkDestroyInstance(m_instance, nullptr);
-        m_instance = VK_NULL_HANDLE;
+        m_instance = nullptr;
     }
+
+    CleanupInstance();
 }
 
 void VulkanBackend::CreateInstance()
@@ -186,4 +194,37 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanBackend::debugCallback(VkDebugUtilsMessageS
     std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
     return VK_FALSE;
+}
+
+bool VulkanBackend::IsDeviceSuitable(VkPhysicalDevice device)
+{
+    return true;
+}
+
+void VulkanBackend::PickPhysicalDevice()
+{
+    uint32_t deviceCount = 0;
+    vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr);
+
+    if (deviceCount == 0)
+    {
+        throw std::runtime_error("Failed to find GPU with Vulkan Support!!");
+    }
+
+    std::vector<VkPhysicalDevice> devices(deviceCount);
+    vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.data());
+
+    for (const auto& device : devices)
+    {
+        if (IsDeviceSuitable(device))
+        {
+            m_physicalDevice = device;
+            break;
+        }
+    }
+
+    if (m_physicalDevice == VK_NULL_HANDLE)
+    {
+        throw std::runtime_error("Failed to find a suitable GPU!");
+    }
 }

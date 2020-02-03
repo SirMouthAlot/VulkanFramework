@@ -5,7 +5,7 @@ void Game::Run()
     //Initializes window
     InitWindow();
     //Initializes vulkan
-    VulkanBackend::InitVulkan();
+    VulkanBackend::GetInstance()->InitVulkan();
     //Our main loop, handles everything for the program.
     MainLoop();
     //Cleans up upon exit.
@@ -37,7 +37,7 @@ void Game::MainLoop()
 
 void Game::Cleanup()
 {
-    VulkanBackend::CleanupVulkan();
+    VulkanBackend::GetInstance()->CleanupVulkan();
     
     //Destroys window
     if (m_window != nullptr)
