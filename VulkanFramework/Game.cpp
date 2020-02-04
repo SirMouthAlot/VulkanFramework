@@ -34,8 +34,6 @@ void Game::MainLoop()
         glfwPollEvents();
         DrawFrame();
     }
-
-    VulkanBackend::GetInstance()->WaitForIdle();
 }
 
 void Game::DrawFrame()
